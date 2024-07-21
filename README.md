@@ -1,1 +1,1 @@
-Full Stach Mono repo projects.
+Full Stack Mono repo projects.
