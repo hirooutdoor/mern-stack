@@ -1,9 +1,25 @@
-import { Label, TextInput, Button } from 'flowbite-react';
+import { Label, TextInput, Button, Alert, Spinner } from 'flowbite-react';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+
+type Input = {
+  name: string;
+  email: string;
+  password: string;
+};
+
+const initialInput: Input = {
+  name: '',
+  email: '',
+  password: '',
+};
 
 export const SignUp = () => {
-  const [input, setInput] = useState({});
+  const [input, setInput] = useState<Input>(initialInput);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput({ ...input, [e.target.id]: e.target.value.trim() });
   };
@@ -11,7 +27,14 @@ export const SignUp = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    if (!input.name || !input.email || !input.password) {
+      return setError('Please fill in all fields.');
+    }
+
     try {
+      setLoading(true);
+      setError('');
+
       const res = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: {
@@ -20,9 +43,21 @@ export const SignUp = () => {
         body: JSON.stringify(input),
       });
       const data = await res.json();
-      console.log(data);
-    } catch (err) {
-      console.error(err);
+
+      if (data.success === false) {
+        setError(data.message);
+        setLoading(false);
+        return;
+      }
+
+      if (res.ok) {
+        setLoading(false);
+        navigate('/sign-in');
+      }
+    } catch (_err) {
+      const err = _err as Error;
+      setError(err.message);
+      setLoading(false);
     }
   };
 
@@ -73,8 +108,19 @@ export const SignUp = () => {
                 onChange={handleChange}
               />
             </div>
-            <Button gradientDuoTone="purpleToPink" type="submit">
-              Sign Up
+            <Button
+              gradientDuoTone="purpleToPink"
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <Spinner size="sm" />
+                  <span className="pl-3">Loading...</span>
+                </>
+              ) : (
+                'Sign Up'
+              )}
             </Button>
           </form>
           <div className="flex gap-2 text-sm mt-5">
@@ -83,6 +129,11 @@ export const SignUp = () => {
               Sign In
             </Link>
           </div>
+          {error && (
+            <Alert className="mt-5" color="failure">
+              {error}
+            </Alert>
+          )}
         </div>
       </div>
     </div>
