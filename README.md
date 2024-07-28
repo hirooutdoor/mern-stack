@@ -1,1 +1,1 @@
-Full Stack Mono repo projects.
+MERN stack app(MongoDB, Express, React, and Node).
