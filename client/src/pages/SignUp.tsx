@@ -1,7 +1,31 @@
-import { Label, TextInput, Button } from 'flowbite-react'
-import { Link } from 'react-router-dom'
+import { Label, TextInput, Button } from 'flowbite-react';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 export const SignUp = () => {
+  const [input, setInput] = useState({});
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput({ ...input, [e.target.id]: e.target.value.trim() });
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    try {
+      const res = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(input),
+      });
+      const data = await res.json();
+      console.log(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <div className="min-h-screen mt-20">
       <div className="flex p-3 max-w-3xl mx-auto flex-col md:flex-row md:items-center gap-5">
@@ -21,14 +45,14 @@ export const SignUp = () => {
         {/* right */}
 
         <div className="flex-1">
-          <form className="flex flex-col gap-4" onSubmit={() => {}}>
+          <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
             <div>
               <Label value="Your username" />
               <TextInput
                 type="text"
                 placeholder="Username"
-                id="username"
-                onChange={() => {}}
+                id="name"
+                onChange={handleChange}
               />
             </div>
             <div>
@@ -37,7 +61,7 @@ export const SignUp = () => {
                 type="email"
                 placeholder="name@company.com"
                 id="email"
-                onChange={() => {}}
+                onChange={handleChange}
               />
             </div>
             <div>
@@ -46,7 +70,7 @@ export const SignUp = () => {
                 type="password"
                 placeholder="Password"
                 id="password"
-                onChange={() => {}}
+                onChange={handleChange}
               />
             </div>
             <Button gradientDuoTone="purpleToPink" type="submit">
@@ -62,5 +86,5 @@ export const SignUp = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
