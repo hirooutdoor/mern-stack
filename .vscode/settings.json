@@ -1,5 +1,5 @@
 {
-  "cSpell.words": ["flowbite", "tailwindcss"],
+  "cSpell.words": ["flowbite", "signin", "tailwindcss"],
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   }
