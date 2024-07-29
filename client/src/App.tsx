@@ -6,8 +6,8 @@ import { About } from './pages/About';
 import { SignUp } from './pages/SignUp';
 import { SignIn } from './pages/SignIn';
 import { Projects } from './pages/Projects';
-import { Header } from './parts/common/Header';
-import { Footer } from './parts/common/Footer';
+import { Header } from './components/Header';
+import { Footer } from './components/Footer';
 
 export const App = () => {
   return (
