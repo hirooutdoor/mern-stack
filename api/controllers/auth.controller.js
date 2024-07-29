@@ -44,19 +44,19 @@ export const signup = async (req, res, next) => {
 export const signin = async (req, res, next) => {
   const { email, password } = req.body;
 
-  if (!email || !password || email === "" || password === "") {
+  if (!email || !password) {
    return next(errorHandler(400, "All fields are required."));
   }
 
   try {
     const validUser = await User.findOne({ email });
     if (!validUser) {
-     return next(errorHandler(404, "User not found."));
+     return next(errorHandler(404, "User not found. Please sign up."));
     }
 
     const validPassword = bcryptjs.compareSync(password, validUser.password);
     if (!validPassword) {
-    return  next(errorHandler(400, "Invalid password."));
+    return  next(errorHandler(400, "Invalid password. Please try again."));
     }
       
       const { password:_, ...rest } = validUser._doc;
