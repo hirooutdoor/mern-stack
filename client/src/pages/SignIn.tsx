@@ -1,6 +1,12 @@
 import { Label, TextInput, Button, Alert, Spinner } from 'flowbite-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import {
+  signInFailure,
+  signInStart,
+  signInSuccess,
+} from '../app/user/userSlice';
+import { RootState, useAppDispatch, useAppSelector } from '../app/store';
 
 type Input = {
   email: string;
@@ -14,8 +20,10 @@ const initialInput: Input = {
 
 export const SignIn = () => {
   const [input, setInput] = useState<Input>(initialInput);
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const { loading, error } = useAppSelector<RootState['user']>(
+    (state) => state.user
+  );
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -26,12 +34,11 @@ export const SignIn = () => {
     e.preventDefault();
 
     if (!input.email || !input.password) {
-      return setError('Please fill in all fields.');
+      return dispatch(signInFailure('Please fill in all fields.'));
     }
 
     try {
-      setLoading(true);
-      setError('');
+      dispatch(signInStart());
 
       const res = await fetch('/api/auth/signin', {
         method: 'POST',
@@ -43,19 +50,16 @@ export const SignIn = () => {
       const data = await res.json();
 
       if (data.success === false) {
-        setError(data.message);
-        setLoading(false);
-        return;
+        return dispatch(signInFailure(data.message));
       }
 
       if (res.ok) {
-        setLoading(false);
+        dispatch(signInSuccess(data));
         navigate('/');
       }
     } catch (_err) {
       const err = _err as Error;
-      setError(err.message);
-      setLoading(false);
+      dispatch(signInFailure(err.message));
     }
   };
 
