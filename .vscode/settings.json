@@ -1,5 +1,10 @@
 {
-  "cSpell.words": ["flowbite", "signin", "tailwindcss"],
+  "cSpell.words": [
+    "flowbite",
+    "reduxjs",
+    "signin",
+    "tailwindcss"
+  ],
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   }
