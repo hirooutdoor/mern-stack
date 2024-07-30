@@ -7,6 +7,7 @@ import {
   signInSuccess,
 } from '../app/user/userSlice';
 import { RootState, useAppDispatch, useAppSelector } from '../app/store';
+import { OAuth } from '../components/OAuth';
 
 type Input = {
   email: string;
@@ -115,6 +116,7 @@ export const SignIn = () => {
                 'Sign In'
               )}
             </Button>
+            <OAuth />
           </form>
           <div className="flex gap-2 text-sm mt-5">
             <span>Don't have an account?</span>
