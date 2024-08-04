@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 type User = {
   name: string;
   email: string;
-  profileUrl: string;
+  profilePicture: string;
 };
 
 type UserState = {
