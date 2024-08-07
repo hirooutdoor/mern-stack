@@ -8,6 +8,8 @@ import {
   ref,
   uploadBytesResumable,
 } from 'firebase/storage';
+import { CircularProgressbar } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
 
 export const DashProfile = () => {
   const { currentUser, loading } = useAppSelector((state) => state.user);
@@ -39,33 +41,29 @@ export const DashProfile = () => {
     const storageRef = ref(storage, fileName);
     const uploadTask = uploadBytesResumable(storageRef, imageFile);
 
+    setUploadError(null);
     uploadTask.on(
       'state_changed',
       (snapshot) => {
         const progress =
           (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
         setUploadProgress(Number(progress.toFixed()));
-        console.log(`Upload is ${uploadProgress}% done`);
-        switch (snapshot.state) {
-          case 'paused':
-            console.log('Upload is paused');
-            break;
-          case 'running':
-            console.log('Upload is running');
-            break;
-        }
       },
-      (error: Error) => {
-        console.log(error);
+      (error) => {
+        console.error(error);
         setUploadError(
           'Failed to upload image. Upload image size is too large. Please try again with less than 2MB.'
         );
+        setUploadProgress(0);
+        setImageFile(null);
+        setImageUrl(null);
       },
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           setImageUrl(downloadURL);
           console.log('File available at', downloadURL);
         });
+        setUploadProgress(0);
       }
     );
   }, [imageFile]);
@@ -89,10 +87,24 @@ export const DashProfile = () => {
           className="relative w-32 h-32 self-center cursor-pointer shadow-md overflow-hidden rounded-full"
           onClick={() => inputImageRef.current?.click()}
         >
+          {uploadProgress > 0 ? (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <CircularProgressbar
+                strokeWidth={5}
+                value={uploadProgress}
+                text={`${uploadProgress}%`}
+                styles={{
+                  path: {
+                    stroke: `rgba(62, 152, 199 ${uploadProgress / 100})`,
+                  },
+                }}
+              />
+            </div>
+          ) : null}
           <img
             src={imageUrl ?? currentUser?.profilePicture}
             alt="user"
-            className={`rounded-full w-full h-full object-cover border-8 border-[lightgray]`}
+            className={`rounded-full w-full h-full object-cover border-8 border-[lightgray] ${uploadProgress && uploadProgress < 100 && 'opacity-50'}`}
           />
         </div>
         {uploadError ? <Alert color="failure">{uploadError}</Alert> : null}
