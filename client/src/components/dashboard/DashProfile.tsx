@@ -1,8 +1,23 @@
 import { TextInput, Button } from 'flowbite-react';
 import { useAppSelector } from '../../app/store';
+import { useRef, useState } from 'react';
 
 export const DashProfile = () => {
   const { currentUser, loading } = useAppSelector((state) => state.user);
+  const inputImageRef = useRef<HTMLInputElement>(null);
+  const [image, setImage] = useState<File | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImage(file);
+      const url = URL.createObjectURL(file);
+      setImageUrl(url);
+    }
+    // TODO: URL.revokeObjectURL(imageUrl)をやってメモリを解放する
+  };
+
   const handleSubmit = () => {
     console.log('submit');
   };
@@ -11,10 +26,19 @@ export const DashProfile = () => {
     <div className="max-w-lg mx-auto p-3 w-full">
       <h1 className="my-7 text-center font-semibold text-3xl">Profile</h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <input type="file" accept="image/*" hidden />
-        <div className="relative w-32 h-32 self-center cursor-pointer shadow-md overflow-hidden rounded-full">
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleImageChange}
+          ref={inputImageRef}
+          hidden
+        />
+        <div
+          className="relative w-32 h-32 self-center cursor-pointer shadow-md overflow-hidden rounded-full"
+          onClick={() => inputImageRef.current?.click()}
+        >
           <img
-            src={currentUser?.profilePicture}
+            src={imageUrl ?? currentUser?.profilePicture}
             alt="user"
             className={`rounded-full w-full h-full object-cover border-8 border-[lightgray]`}
           />
