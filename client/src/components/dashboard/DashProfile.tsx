@@ -1,17 +1,26 @@
-import { TextInput, Button } from 'flowbite-react';
+import { TextInput, Button, Alert } from 'flowbite-react';
 import { useAppSelector } from '../../app/store';
-import { useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { app } from '../../firebase';
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytesResumable,
+} from 'firebase/storage';
 
 export const DashProfile = () => {
   const { currentUser, loading } = useAppSelector((state) => state.user);
   const inputImageRef = useRef<HTMLInputElement>(null);
-  const [image, setImage] = useState<File | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setImage(file);
+      setImageFile(file);
       const url = URL.createObjectURL(file);
       setImageUrl(url);
     }
@@ -21,6 +30,49 @@ export const DashProfile = () => {
   const handleSubmit = () => {
     console.log('submit');
   };
+
+  const uploadImage = useCallback(async () => {
+    if (!imageFile) return;
+
+    const storage = getStorage(app);
+    const fileName = new Date().toISOString() + imageFile?.name;
+    const storageRef = ref(storage, fileName);
+    const uploadTask = uploadBytesResumable(storageRef, imageFile);
+
+    uploadTask.on(
+      'state_changed',
+      (snapshot) => {
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        setUploadProgress(Number(progress.toFixed()));
+        console.log(`Upload is ${uploadProgress}% done`);
+        switch (snapshot.state) {
+          case 'paused':
+            console.log('Upload is paused');
+            break;
+          case 'running':
+            console.log('Upload is running');
+            break;
+        }
+      },
+      (error: Error) => {
+        console.log(error);
+        setUploadError(
+          'Failed to upload image. Upload image size is too large. Please try again with less than 2MB.'
+        );
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          setImageUrl(downloadURL);
+          console.log('File available at', downloadURL);
+        });
+      }
+    );
+  }, [imageFile]);
+
+  useEffect(() => {
+    uploadImage();
+  }, [uploadImage]);
 
   return (
     <div className="max-w-lg mx-auto p-3 w-full">
@@ -43,6 +95,7 @@ export const DashProfile = () => {
             className={`rounded-full w-full h-full object-cover border-8 border-[lightgray]`}
           />
         </div>
+        {uploadError ? <Alert color="failure">{uploadError}</Alert> : null}
         <TextInput
           type="text"
           id="name"
