@@ -16,8 +16,7 @@ export const DashProfile = () => {
   const [formState, setFormState] = useState({});
   const {
     uploadImage,
-    setImageFile,
-    setImageUrl,
+    handleImageChange,
     imageUrl,
     inputImageRef,
     uploadProgress,
@@ -25,15 +24,6 @@ export const DashProfile = () => {
   } = useUploadProfileImage({ setFormState });
 
   const uploadImageCompleted = uploadProgress === 0;
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImageFile(file);
-      const url = URL.createObjectURL(file);
-      setImageUrl(url);
-    }
-  };
 
   const handleChangeFormInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormState({

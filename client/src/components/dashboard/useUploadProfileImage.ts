@@ -18,6 +18,15 @@ export const useUploadProfileImage = ({ setFormState }: Args) => {
   const [uploadError, setUploadError] = useState<string | null>(null);
   const inputImageRef = useRef<HTMLInputElement>(null);
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      const url = URL.createObjectURL(file);
+      setImageUrl(url);
+    }
+  };
+
   const uploadImage = useCallback(async () => {
     if (!imageFile) return;
 
@@ -58,6 +67,7 @@ export const useUploadProfileImage = ({ setFormState }: Args) => {
     uploadImage,
     setImageFile,
     setImageUrl,
+    handleImageChange,
     imageFile,
     imageUrl,
     inputImageRef,
