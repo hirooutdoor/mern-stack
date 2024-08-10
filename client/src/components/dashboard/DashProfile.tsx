@@ -1,23 +1,22 @@
 import { TextInput, Button, Alert } from 'flowbite-react';
 import { useAppSelector } from '../../app/store';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { app } from '../../firebase';
-import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytesResumable,
-} from 'firebase/storage';
+import { useEffect } from 'react';
+
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
+import { useUploadProfileImage } from './useUploadProfileImage';
 
 export const DashProfile = () => {
   const { currentUser, loading } = useAppSelector((state) => state.user);
-  const inputImageRef = useRef<HTMLInputElement>(null);
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [uploadProgress, setUploadProgress] = useState<number>(0);
-  const [uploadError, setUploadError] = useState<string | null>(null);
+  const {
+    uploadImage,
+    setImageFile,
+    setImageUrl,
+    imageUrl,
+    inputImageRef,
+    uploadProgress,
+    uploadError,
+  } = useUploadProfileImage();
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -35,41 +34,6 @@ export const DashProfile = () => {
   const handleSubmit = () => {
     console.log('submit');
   };
-
-  const uploadImage = useCallback(async () => {
-    if (!imageFile) return;
-
-    const storage = getStorage(app);
-    const fileName = new Date().toISOString() + imageFile?.name;
-    const storageRef = ref(storage, fileName);
-    const uploadTask = uploadBytesResumable(storageRef, imageFile);
-
-    setUploadError(null);
-    uploadTask.on(
-      'state_changed',
-      (snapshot) => {
-        const progress =
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        setUploadProgress(Number(progress.toFixed()));
-      },
-      (error) => {
-        console.error(error);
-        setUploadError(
-          'Failed to upload image. Upload image size is too large. Please try again with less than 2MB.'
-        );
-        setUploadProgress(0);
-        setImageFile(null);
-        setImageUrl(null);
-      },
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          setImageUrl(downloadURL);
-          console.log('File available at', downloadURL);
-        });
-        setUploadProgress(0);
-      }
-    );
-  }, [imageFile]);
 
   useEffect(() => {
     uploadImage();
