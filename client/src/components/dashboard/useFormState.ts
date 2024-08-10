@@ -11,9 +11,12 @@ type Args = {
   currentUser: User | null;
 };
 
+type UpdateStatus = 'success' | 'failure' | 'notStarted';
+
 export const useFormState = ({ currentUser }: Args) => {
   const [formState, setFormState] = useState({});
   const dispatch = useAppDispatch();
+  const [updateStatus, setUpdateStatus] = useState<UpdateStatus>('notStarted');
 
   const handleChangeFormInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormState({
@@ -24,7 +27,7 @@ export const useFormState = ({ currentUser }: Args) => {
 
   const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    setUpdateStatus('notStarted');
     if (Object.keys(formState).length === 0) {
       return;
     }
@@ -44,12 +47,15 @@ export const useFormState = ({ currentUser }: Args) => {
 
       if (!res.ok) {
         dispatch(updateUserFailure(data.message));
+        setUpdateStatus('failure');
       } else {
         dispatch(updateUserSuccess(data));
+        setUpdateStatus('success');
       }
     } catch (err) {
       const error = err as Error;
       dispatch(updateUserFailure(error.message));
+      setUpdateStatus('failure');
     }
   };
 
@@ -57,5 +63,6 @@ export const useFormState = ({ currentUser }: Args) => {
     handleChangeFormInput,
     handleSubmit,
     setFormState,
+    updateStatus,
   };
 };

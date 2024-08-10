@@ -7,10 +7,11 @@ import { useUploadProfileImage } from './useUploadProfileImage';
 import { useFormState } from './useFormState';
 
 export const DashProfile = () => {
-  const { currentUser, loading } = useAppSelector((state) => state.user);
-  const { handleChangeFormInput, handleSubmit, setFormState } = useFormState({
-    currentUser,
-  });
+  const { currentUser, loading, error } = useAppSelector((state) => state.user);
+  const { handleChangeFormInput, handleSubmit, setFormState, updateStatus } =
+    useFormState({
+      currentUser,
+    });
   const {
     uploadImage,
     handleImageChange,
@@ -94,6 +95,16 @@ export const DashProfile = () => {
         <span className="cursor-pointer">Delete Account</span>
         <span className="cursor-pointer">Sign Out</span>
       </div>
+      {updateStatus === 'success' ? (
+        <Alert color="success" className="mt-5">
+          Profile updated successfully.
+        </Alert>
+      ) : null}
+      {updateStatus === 'failure' ? (
+        <Alert color="failure" className="mt-5">
+          {error}
+        </Alert>
+      ) : null}
     </div>
   );
 };
