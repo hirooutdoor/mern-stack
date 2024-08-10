@@ -1,13 +1,19 @@
 import { TextInput, Button, Alert } from 'flowbite-react';
-import { useAppSelector } from '../../app/store';
-import { useEffect } from 'react';
-
+import { useAppDispatch, useAppSelector } from '../../app/store';
+import { useEffect, useState } from 'react';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import { useUploadProfileImage } from './useUploadProfileImage';
+import {
+  updateUserFailure,
+  updateUserStart,
+  updateUserSuccess,
+} from '../../app/user/userSlice';
 
 export const DashProfile = () => {
   const { currentUser, loading } = useAppSelector((state) => state.user);
+  const dispatch = useAppDispatch();
+  const [formState, setFormState] = useState({});
   const {
     uploadImage,
     setImageFile,
@@ -16,7 +22,9 @@ export const DashProfile = () => {
     inputImageRef,
     uploadProgress,
     uploadError,
-  } = useUploadProfileImage();
+  } = useUploadProfileImage({ setFormState });
+
+  const uploadImageCompleted = uploadProgress === 0;
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -28,11 +36,45 @@ export const DashProfile = () => {
   };
 
   const handleChangeFormInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.value);
+    setFormState({
+      ...formState,
+      [e.target.id]: e.target.value,
+    });
   };
 
-  const handleSubmit = () => {
-    console.log('submit');
+  const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (Object.keys(formState).length === 0) {
+      return;
+    }
+
+    if (!uploadImageCompleted) {
+      return;
+    }
+
+    try {
+      dispatch(updateUserStart());
+
+      const res = await fetch(`/api/user/update/${currentUser?._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formState),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        dispatch(updateUserFailure(data.message));
+      } else {
+        dispatch(updateUserSuccess(data));
+      }
+    } catch (err) {
+      const error = err as Error;
+      dispatch(updateUserFailure(error.message));
+    }
   };
 
   useEffect(() => {
@@ -95,7 +137,12 @@ export const DashProfile = () => {
           placeholder="password"
           onChange={handleChangeFormInput}
         />
-        <Button type="submit" gradientDuoTone="purpleToBlue" outline>
+        <Button
+          type="submit"
+          gradientDuoTone="purpleToBlue"
+          outline
+          disabled={!uploadImageCompleted}
+        >
           {loading ? 'Loading...' : 'Update'}
         </Button>
       </form>

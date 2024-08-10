@@ -7,7 +7,11 @@ import {
 import { useCallback, useRef, useState } from 'react';
 import { app } from '../../firebase';
 
-export const useUploadProfileImage = () => {
+type Args = {
+  setFormState: React.Dispatch<React.SetStateAction<object>>;
+};
+
+export const useUploadProfileImage = ({ setFormState }: Args) => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
@@ -43,11 +47,12 @@ export const useUploadProfileImage = () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           setImageUrl(downloadURL);
           console.log('File available at', downloadURL);
+          setFormState((prev) => ({ ...prev, profilePicture: downloadURL }));
         });
         setUploadProgress(0);
       }
     );
-  }, [imageFile]);
+  }, [setFormState, imageFile]);
 
   return {
     uploadImage,
