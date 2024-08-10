@@ -73,5 +73,6 @@ export const useUploadProfileImage = ({ setFormState }: Args) => {
     inputImageRef,
     uploadProgress,
     uploadError,
+    uploadImageCompleted: uploadProgress === 0,
   };
 };

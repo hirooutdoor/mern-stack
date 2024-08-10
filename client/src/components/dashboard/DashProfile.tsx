@@ -1,19 +1,16 @@
 import { TextInput, Button, Alert } from 'flowbite-react';
-import { useAppDispatch, useAppSelector } from '../../app/store';
-import { useEffect, useState } from 'react';
+import { useAppSelector } from '../../app/store';
+import { useEffect } from 'react';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import { useUploadProfileImage } from './useUploadProfileImage';
-import {
-  updateUserFailure,
-  updateUserStart,
-  updateUserSuccess,
-} from '../../app/user/userSlice';
+import { useFormState } from './useFormState';
 
 export const DashProfile = () => {
   const { currentUser, loading } = useAppSelector((state) => state.user);
-  const dispatch = useAppDispatch();
-  const [formState, setFormState] = useState({});
+  const { handleChangeFormInput, handleSubmit, setFormState } = useFormState({
+    currentUser,
+  });
   const {
     uploadImage,
     handleImageChange,
@@ -21,51 +18,8 @@ export const DashProfile = () => {
     inputImageRef,
     uploadProgress,
     uploadError,
+    uploadImageCompleted,
   } = useUploadProfileImage({ setFormState });
-
-  const uploadImageCompleted = uploadProgress === 0;
-
-  const handleChangeFormInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormState({
-      ...formState,
-      [e.target.id]: e.target.value,
-    });
-  };
-
-  const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    if (Object.keys(formState).length === 0) {
-      return;
-    }
-
-    if (!uploadImageCompleted) {
-      return;
-    }
-
-    try {
-      dispatch(updateUserStart());
-
-      const res = await fetch(`/api/user/update/${currentUser?._id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formState),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        dispatch(updateUserFailure(data.message));
-      } else {
-        dispatch(updateUserSuccess(data));
-      }
-    } catch (err) {
-      const error = err as Error;
-      dispatch(updateUserFailure(error.message));
-    }
-  };
 
   useEffect(() => {
     uploadImage();
