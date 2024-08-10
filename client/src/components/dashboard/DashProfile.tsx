@@ -26,7 +26,10 @@ export const DashProfile = () => {
       const url = URL.createObjectURL(file);
       setImageUrl(url);
     }
-    // TODO: URL.revokeObjectURL(imageUrl)をやってメモリを解放する
+  };
+
+  const handleChangeFormInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(e.target.value);
   };
 
   const handleSubmit = () => {
@@ -113,14 +116,21 @@ export const DashProfile = () => {
           id="name"
           placeholder="name"
           defaultValue={currentUser?.name}
+          onChange={handleChangeFormInput}
         />
         <TextInput
           type="email"
           id="email"
           placeholder="email"
           defaultValue={currentUser?.email}
+          onChange={handleChangeFormInput}
         />
-        <TextInput type="password" id="password" placeholder="password" />
+        <TextInput
+          type="password"
+          id="password"
+          placeholder="password"
+          onChange={handleChangeFormInput}
+        />
         <Button type="submit" gradientDuoTone="purpleToBlue" outline>
           {loading ? 'Loading...' : 'Update'}
         </Button>
