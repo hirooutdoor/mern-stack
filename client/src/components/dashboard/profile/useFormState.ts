@@ -4,8 +4,8 @@ import {
   updateUserStart,
   updateUserSuccess,
   User,
-} from '../../app/user/userSlice';
-import { useAppDispatch } from '../../app/store';
+} from '../../../app/user/userSlice';
+import { useAppDispatch } from '../../../app/store';
 
 type Args = {
   currentUser: User | null;

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import DashSidebar from '../components/dashboard/DashSidebar';
-import { DashProfile } from '../components/dashboard/DashProfile';
+import { DashProfile } from '../components/dashboard/profile/DashProfile';
 import { Tab } from '../app/schema/search';
 
 export const Dashboard = () => {

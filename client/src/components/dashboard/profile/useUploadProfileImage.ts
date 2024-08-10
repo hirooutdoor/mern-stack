@@ -5,7 +5,7 @@ import {
   uploadBytesResumable,
 } from 'firebase/storage';
 import { useCallback, useRef, useState } from 'react';
-import { app } from '../../firebase';
+import { app } from '../../../firebase';
 
 type Args = {
   setFormState: React.Dispatch<React.SetStateAction<object>>;
