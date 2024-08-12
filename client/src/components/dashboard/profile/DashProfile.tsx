@@ -7,6 +7,7 @@ import { useUploadProfileImage } from './useUploadProfileImage';
 import { useFormState } from './useFormState';
 import { useDeleteUser } from './useDeleteuser';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
+import { useSignOut } from './useSignOut';
 
 export const DashProfile = () => {
   const { currentUser, loading, error } = useAppSelector((state) => state.user);
@@ -24,6 +25,7 @@ export const DashProfile = () => {
     uploadImageCompleted,
   } = useUploadProfileImage({ setFormState });
   const { showModal, setShowModal, handleDeleteUser } = useDeleteUser();
+  const { handleSignOut } = useSignOut();
 
   useEffect(() => {
     uploadImage();
@@ -98,7 +100,9 @@ export const DashProfile = () => {
         <span className="cursor-pointer" onClick={() => setShowModal(true)}>
           Delete Account
         </span>
-        <span className="cursor-pointer">Sign Out</span>
+        <span className="cursor-pointer" onClick={handleSignOut}>
+          Sign Out
+        </span>
       </div>
       {updateStatus === 'success' ? (
         <Alert color="success" className="mt-5">
