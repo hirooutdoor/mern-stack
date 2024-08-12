@@ -7,7 +7,7 @@ import { useUploadProfileImage } from './useUploadProfileImage';
 import { useFormState } from './useFormState';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
 import { useSignOut } from '../../useSignOut';
-import { useDeleteUser } from './useDeleteUsera';
+import { useDeleteUser } from './useDeleteUser';
 
 export const DashProfile = () => {
   const { currentUser, loading, error } = useAppSelector((state) => state.user);
