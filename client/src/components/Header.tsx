@@ -4,12 +4,14 @@ import { AiOutlineSearch } from 'react-icons/ai';
 import { FaMoon, FaSun } from 'react-icons/fa';
 import { useAppDispatch, useAppSelector } from '../app/store';
 import { toggleTheme } from '../app/theme/themeSlice';
+import { useSignOut } from './useSignOut';
 
 export const Header = () => {
   const path = useLocation().pathname;
   const { currentUser } = useAppSelector((state) => state.user);
   const { theme } = useAppSelector((state) => state.theme);
   const dispatch = useAppDispatch();
+  const { handleSignOut } = useSignOut();
 
   return (
     <Navbar className="border-b-2">
@@ -60,7 +62,9 @@ export const Header = () => {
               <Dropdown.Item className="block">Profile</Dropdown.Item>
             </Link>
             <Dropdown.Divider />
-            <Dropdown.Item className="block">Sign Out</Dropdown.Item>
+            <Dropdown.Item className="block" onClick={handleSignOut}>
+              Sign Out
+            </Dropdown.Item>
           </Dropdown>
         ) : (
           <Link to="/sign-in">

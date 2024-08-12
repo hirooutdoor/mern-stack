@@ -2,11 +2,13 @@ import { Sidebar } from 'flowbite-react';
 import { HiUser, HiArrowSmRight } from 'react-icons/hi';
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Tab } from '../../app/schema/search';
+import { useSignOut } from '../../useSignOut';
+import { Tab } from '../../../app/schema/search';
 
 export default function DashSidebar() {
   const location = useLocation();
   const [tab, setTab] = useState<Tab>(null);
+  const { handleSignOut } = useSignOut();
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -31,7 +33,11 @@ export default function DashSidebar() {
               Profile
             </Sidebar.Item>
           </Link>
-          <Sidebar.Item icon={HiArrowSmRight} className="cursor-pointer">
+          <Sidebar.Item
+            icon={HiArrowSmRight}
+            className="cursor-pointer"
+            onClick={handleSignOut}
+          >
             Sign Out
           </Sidebar.Item>
         </Sidebar.ItemGroup>
