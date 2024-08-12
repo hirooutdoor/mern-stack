@@ -1,9 +1,9 @@
-import { useAppDispatch } from '../../../app/store';
+import { useAppDispatch } from '../app/store';
 import {
   signOutFailure,
   signOutStart,
   signOutSuccess,
-} from '../../../app/user/userSlice';
+} from '../app/user/userSlice';
 
 export const useSignOut = () => {
   const dispatch = useAppDispatch();

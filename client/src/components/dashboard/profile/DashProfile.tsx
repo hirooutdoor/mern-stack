@@ -5,9 +5,9 @@ import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import { useUploadProfileImage } from './useUploadProfileImage';
 import { useFormState } from './useFormState';
-import { useDeleteUser } from './useDeleteuser';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
-import { useSignOut } from './useSignOut';
+import { useSignOut } from '../../useSignOut';
+import { useDeleteUser } from './useDeleteUsera';
 
 export const DashProfile = () => {
   const { currentUser, loading, error } = useAppSelector((state) => state.user);
