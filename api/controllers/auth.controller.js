@@ -73,6 +73,11 @@ export const signin = async (req, res, next) => {
   res.json("User signed in successfully.");
 };
 
+export const signout = (req, res) => {
+  res.clearCookie("access_token");
+  res.json("User signed out successfully.");
+};
+
 export const google = async (req, res, next) => {
   const { name, email, googlePhotoUrl } = req.body;
 
